@@ -34,6 +34,9 @@
 
 @synthesize isScaleToFit = _isScaleToFit;
 
+- (instancetype) initWithFrame:(CGRect)frame {
+    return [self initByDefaultWithFrame:frame];
+}
 - (instancetype) initByDefaultWithFrame : (CGRect) frame {
     return [self initWithFrame:frame
                withWebViewType:CCWebViewTypeAuto];
@@ -163,9 +166,7 @@
             WKBackForwardListItem *itemBack = webView.backForwardList.backList[integerLevel];
             [webView goToBackForwardListItem:itemBack];
         }
-    } else {
-        [self ccGoBack];
-    }
+    } else [self ccGoBack];
 }
 
 #pragma mark - Private Methods 
@@ -223,6 +224,7 @@
             tempSubview.backgroundColor = [UIColor clearColor];
         }
     }
+    webView.delegate = self;
     _webViewInUse = webView;
 }
 - (void) ccDefaultSettings {

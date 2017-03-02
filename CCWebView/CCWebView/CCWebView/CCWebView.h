@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
                           withName : (NSString *) stringName NS_AVAILABLE_IOS(8_0);
 - (void) ccRemoveScirptMessageHandler : (NSString *) stringName NS_AVAILABLE_IOS(8_0) ;
 
-
+// if UIWebView , return value is nil .
 - (id) ccGoBack ;
 - (id) ccGoForward ;
 - (id) ccReload ;
