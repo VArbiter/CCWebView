@@ -407,6 +407,16 @@
         [webView removeObserver:self forKeyPath:@"estimatedProgress"];
         [webView removeObserver:self forKeyPath:@"title"];
     }
+    [_webViewInUse scrollView].delegate = nil;
+    [_webViewInUse stopLoading];
+    if (self.isUIWebView) {
+        [(UIWebView *)_webViewInUse loadHTMLString:@""
+                                           baseURL:nil];
+    } else [(WKWebView *)_webViewInUse loadHTMLString:@""
+                                              baseURL:nil];
+    [_webViewInUse stopLoading];
+    [_webViewInUse removeFromSuperview];
+    _webViewInUse = nil;
 }
 @end
 
