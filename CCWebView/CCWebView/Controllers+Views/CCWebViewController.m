@@ -52,6 +52,9 @@
     CCLog(@"_CC_%@_",request.URL.absoluteString);
     return YES;
 }
+- (void) ccWebViewDidBeginLoading:(CCWebView *)webView withProgress:(float)floatProgress {
+    CCLog(@"_CC_PROGRESS_%f_",floatProgress);
+}
 
 _CC_DETECT_DEALLOC_
 

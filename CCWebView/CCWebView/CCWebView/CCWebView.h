@@ -21,6 +21,10 @@
     #define CCLog(...) /* */
 #endif
 
+#define ccWeakSelf __weak typeof(&*self) pSelf = self
+
+#define ccStringFormat(...) [NSString stringWithFormat:__VA_ARGS__]
+
 #define _CC_DETECT_DEALLOC_ \
     - (void)dealloc { \
         CCLog(@"_CC_%@_DEALLOC_" , NSStringFromClass([self class]));\
@@ -46,6 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL) ccWebViewShouldStartLoad : (CCWebView *) webView
                       withRequest : (NSURLRequest *) request
                withNavigationType : (UIWebViewNavigationType) navigationType ;
+- (void) ccWebViewDidBeginLoading : (CCWebView *) webView
+                     withProgress : (float) floatProgress ;
 @end
 
 @interface CCWebView : UIView
@@ -81,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void) ccEvaluateJavaScript : (NSString *) stringJavaScript
           withCompleteHandler : (nullable void (^) (id result , NSError *error) ) handler ;
-- (NSString *) ccStringByEvaluatingJavaScriptFromString : (NSString *) stringJS __deprecated_msg("Not recommend . Use [ccEvaluateJavaScript:withCompleteHandler:] instead"); // Sync . Wait until it finished . Not recommend .
+- (NSString *) ccStringByEvaluatingJavaScriptFromString : (NSString *) stringJS __deprecated_msg("Not recommended . Use [ccEvaluateJavaScript:withCompleteHandler:] instead"); // Sync . Wait until it finished . Not recommended .
 
 // for wk.
 - (void) ccAddScriptMessageHandler : (id <WKScriptMessageHandler>) messageHandler
@@ -101,6 +107,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark - CCUIWebViewDelegate
+
+@class CCUIWebViewDelegate;
+
+@protocol CCWebViewProgressDelegate <NSObject>
+
+- (void) ccUIWebViewProgressDelegate : (CCUIWebViewDelegate *) delegateUIWebView
+                        withProgress : (float) floatProgress ;
+
+@end
+
+typedef void(^CCReloadProgressBlock)(float floatProgress);
+
+@interface CCUIWebViewDelegate : NSObject <UIWebViewDelegate>
+
+/// 0.1f
+@property (nonatomic , assign , readonly) float floatInitialProgress ;
+/// 0.5f
+@property (nonatomic , assign , readonly) float floatInteractProgress ;
+/// 0.9f
+@property (nonatomic , assign , readonly) float floatFinalProgress ;
+
+@property (nonatomic , assign) id <CCWebViewProgressDelegate> delegateProgress ;
+@property (nonatomic , assign) id <UIWebViewDelegate> delegateWebView ;
+@property (nonatomic , copy) CCReloadProgressBlock blockProgress ;
+@property (nonatomic , assign , readonly) float floatProgress ;
+
+@end
+
+#pragma mark - CCCommonDef
 @interface CCCommonDef : NSObject
 
 void _CC_Safe_Sync_Block(id block_nil , dispatch_block_t block);

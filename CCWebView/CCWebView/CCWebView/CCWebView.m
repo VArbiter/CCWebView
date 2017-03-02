@@ -8,7 +8,7 @@
 
 #import "CCWebView.h"
 
-@interface CCWebView () < UIWebViewDelegate , WKNavigationDelegate , WKUIDelegate >
+@interface CCWebView () < UIWebViewDelegate , WKNavigationDelegate , WKUIDelegate , CCWebViewProgressDelegate >
 
 @property (nonatomic , assign , readwrite) float floatLoadingProgress ;
 @property (nonatomic , strong , readwrite) NSURLRequest *requestOrigin ;
@@ -16,6 +16,7 @@
 @property (nonatomic , strong , readwrite) NSString *stringTitle;
 
 @property (nonatomic , assign) BOOL isUIWebView ;
+@property (nonatomic , strong) CCUIWebViewDelegate *delegateWebView ;
 
 - (void) ccInitWebView : (CCWebViewType) type ;
 - (void) ccInitWKWebView ;
@@ -27,6 +28,7 @@
 - (void) ccDelegate_WebViewDidFailWithError : (NSError *) error ;
 - (BOOL) ccDelegate_WebViewShouldStartLoadWithRequest : (NSURLRequest *) request
                                    withNavigationType : (NSInteger) navigationType ;
+- (void) ccDelegate_WebViewDidBeginLoadingWithProgress : (float) floatProgress ;
 
 @end
 
@@ -224,7 +226,11 @@
             tempSubview.backgroundColor = [UIColor clearColor];
         }
     }
-    webView.delegate = self;
+    _delegateWebView = [[CCUIWebViewDelegate alloc] init];
+    _delegateWebView.delegateWebView = self;
+    _delegateWebView.delegateProgress = self;
+    __weak typeof(_delegateWebView) pDelegateWebView = _delegateWebView;
+    webView.delegate = pDelegateWebView;
     _webViewInUse = webView;
 }
 - (void) ccDefaultSettings {
@@ -259,11 +265,11 @@
                        change:(NSDictionary *)change
                       context:(void *)context{
     if([keyPath isEqualToString:@"estimatedProgress"]) {
-        self.floatLoadingProgress = [change[NSKeyValueChangeNewKey] doubleValue];
+        _floatLoadingProgress = [change[NSKeyValueChangeNewKey] doubleValue];
+        [self ccDelegate_WebViewDidBeginLoadingWithProgress:_floatLoadingProgress];
     }
-    
     else if([keyPath isEqualToString:@"title"]) {
-        self.stringTitle = change[NSKeyValueChangeNewKey];
+        _stringTitle = change[NSKeyValueChangeNewKey];
     }
 }
 
@@ -285,7 +291,11 @@
     return [self ccDelegate_WebViewShouldStartLoadWithRequest:request
                                            withNavigationType:navigationType];
 }
-
+#pragma mark - CCWebViewProgressDelegate
+- (void)ccUIWebViewProgressDelegate:(CCUIWebViewDelegate *)delegateUIWebView withProgress:(float)floatProgress {
+    _floatLoadingProgress = floatProgress;
+    [self ccDelegate_WebViewDidBeginLoadingWithProgress:_floatLoadingProgress];
+}
 #pragma mark - CCWebViewDelegate
 - (void) ccDelegate_WebViewDidStartLoading{
     if ([_delegate respondsToSelector:@selector(ccWebViewDidStartLoading:)]) {
@@ -315,6 +325,12 @@
                                      withNavigationType:navigationType];
     }
     return isExcuted;
+}
+- (void) ccDelegate_WebViewDidBeginLoadingWithProgress : (float) floatProgress {
+    if ([_delegate respondsToSelector:@selector(ccWebViewDidBeginLoading:withProgress:)]) {
+        [_delegate ccWebViewDidBeginLoading:self
+                               withProgress:floatProgress];
+    }
 }
 #pragma mark - Setter
 - (void)setIsScaleToFit:(BOOL)isScaleToFit {
@@ -393,6 +409,167 @@
     }
 }
 @end
+
+#pragma mark - CCUIWebViewDelegate
+
+@interface CCUIWebViewDelegate ()
+
+@property (nonatomic , assign , readwrite) float floatProgress ;
+@property (nonatomic , assign) NSInteger integerLoadingCount ;
+@property (nonatomic , assign) NSInteger integerMaxLoadingCount ;
+@property (nonatomic , assign) BOOL isInteract ;
+@property (nonatomic , strong) NSURL *urlCurrent ;
+
+@property (nonatomic , readonly) NSString *stringProxy ;
+@property (nonatomic , readonly) float floatCompleteProgress ;
+
+- (void) ccDefaultSettings ;
+- (void) ccStart ;
+- (void) ccIncrement ;
+- (void) ccReset ;
+- (void) ccComplete ;
+
+- (void) ccState : (UIWebView *) webView ;
+
+@end
+
+@implementation CCUIWebViewDelegate
+
+- (instancetype)init {
+    if ((self = [super init])) {
+        [self ccDefaultSettings];
+    }
+    return self;
+}
+
+#pragma mark - Private .
+- (void) ccDefaultSettings {
+    _floatProgress = self.floatInitialProgress;
+    [self ccReset];
+}
+- (void) ccStart {
+    if (_floatProgress < self.floatInitialProgress) {
+        [self setFloatProgress:self.floatInitialProgress];
+    }
+}
+- (void) ccIncrement {
+    float floatCurrentProgress = _floatProgress;
+    float floatMaxProgress = _isInteract ? self.floatInitialProgress : self.floatInteractProgress;
+    float floatRemainPercent = (float) _integerLoadingCount / (float) _integerMaxLoadingCount;
+    [self setFloatProgress:fmin((floatMaxProgress - floatCurrentProgress) * floatRemainPercent, floatMaxProgress)];
+}
+- (void) ccReset {
+    _integerMaxLoadingCount = _integerLoadingCount = 0;
+    _isInteract = NO;
+    [self setFloatProgress:.0f];
+}
+- (void) ccComplete {
+    [self setFloatProgress:self.floatCompleteProgress];
+}
+
+- (void) ccState : (UIWebView *) webView {
+    --_integerLoadingCount;
+    [self ccIncrement];
+    
+    NSString *stringReadyState = [webView stringByEvaluatingJavaScriptFromString:@"document.readyState"];
+    BOOL isInteractive = [stringReadyState isEqualToString:@"interactive"];
+    if (isInteractive) {
+        _isInteract = isInteractive;
+        NSString *stringCompleteJS = ccStringFormat(@"window.addEventListener('load', \
+                                                    function() { \
+                                                    var iframe = document.createElement('iframe'); \
+                                                    iframe.style.display = 'none'; \
+                                                    iframe.src = '%@'; \
+                                                    document.body.appendChild(iframe); \
+                                                    } \
+                                                    , false);", self.stringProxy);
+        [webView stringByEvaluatingJavaScriptFromString:stringCompleteJS];
+    }
+    
+    BOOL isRedirect = !(_urlCurrent && [_urlCurrent isEqual:webView.request.mainDocumentURL]);
+    BOOL isComplete = [stringReadyState isEqualToString:@"complete"];
+    if (isComplete && !isRedirect) [self ccComplete];
+}
+#pragma mark - UIWebViewDelegate
+- (void) webViewDidStartLoad:(UIWebView *)webView {
+    if ([_delegateWebView respondsToSelector:@selector(webViewDidStartLoad:)]) {
+        [_delegateWebView webViewDidStartLoad:webView];
+    }
+    _integerMaxLoadingCount = fmax(_integerMaxLoadingCount, ++_integerLoadingCount);
+    [self ccStart];
+}
+- (void) webViewDidFinishLoad:(UIWebView *)webView {
+    if ([_delegateWebView respondsToSelector:@selector(webViewDidFinishLoad:)]) {
+        [_delegateWebView webViewDidFinishLoad:webView];
+    }
+    [self ccState:webView];
+}
+- (void) webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    if ([_delegateWebView respondsToSelector:@selector(webView:didFailLoadWithError:)]) {
+        [_delegateWebView webView:webView
+             didFailLoadWithError:error];
+    }
+    [self ccState:webView];
+}
+- (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    if ([request.URL.absoluteString isEqualToString:self.stringProxy]) {
+        [self ccComplete];
+        return NO;
+    }
+    BOOL isValued = YES;
+    if ([_delegateWebView respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
+        isValued = [_delegateWebView webView:webView
+                  shouldStartLoadWithRequest:request
+                              navigationType:navigationType];
+    }
+    BOOL isFragmentJump= NO;
+    if (request.URL.fragment) {
+        NSString *stringNonFragment = [request.URL.absoluteString stringByReplacingOccurrencesOfString:[@"#" stringByAppendingString:request.URL.fragment]
+                                                                                            withString:@""];
+        isFragmentJump = [stringNonFragment isEqualToString:webView.request.URL.absoluteString];
+    }
+    BOOL isNavigationTopLevel = [request.URL isEqual:request.mainDocumentURL];
+    BOOL isHTTPScheme = [request.URL.scheme isEqualToString:@"http"] || [request.URL.scheme isEqualToString:@"https"];
+    if (isValued && !isFragmentJump && isNavigationTopLevel && isHTTPScheme) {
+        _urlCurrent = request.URL;
+        [self ccReset];
+    }
+    return isValued;
+}
+#pragma mark - Setter
+- (void)setFloatProgress:(float)floatProgress {
+    // only increment
+    if (floatProgress > _floatProgress || !floatProgress) {
+        _floatProgress = floatProgress;
+        if ([_delegateProgress respondsToSelector:@selector(ccUIWebViewProgressDelegate:withProgress:)]) {
+            [_delegateProgress ccUIWebViewProgressDelegate:self
+                                              withProgress:floatProgress];
+        }
+        ccWeakSelf;
+        _CC_Safe_Async_Block(_blockProgress, ^{
+            pSelf.blockProgress(floatProgress);
+        });
+    }
+}
+#pragma mark - Getter
+- (float)floatInitialProgress {
+    return .1f;
+}
+- (float)floatInteractProgress {
+    return .5f;
+}
+- (float)floatFinalProgress {
+    return .9f;
+}
+- (float)floatCompleteProgress {
+    return 1.0f;
+}
+- (NSString *)stringProxy {
+    return @"webviewprogressproxy:///complete";
+}
+@end
+
+#pragma mark - CCCommonDef
 
 @interface CCCommonDef ()
 
