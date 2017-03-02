@@ -599,3 +599,20 @@ void _CC_SAFE_BLOCK(id block_nil , dispatch_block_t block , BOOL isSync) {
 }
 
 @end
+
+#pragma mark - Solve Memory LEAK
+
+@implementation CCWKScriptMessageDelegate
+
++ (instancetype)ccInitWithDelegate:(id<WKScriptMessageHandler>)delegateScriptMessage {
+    CCWKScriptMessageDelegate *item = [[self alloc] init];
+    item.delegateScriptMessage = delegateScriptMessage;
+    return item;
+}
+
+#pragma mark - WKScriptMessageHandler
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+    [self.delegateScriptMessage userContentController:userContentController
+                              didReceiveScriptMessage:message];
+}
+@end

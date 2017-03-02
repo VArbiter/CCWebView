@@ -145,4 +145,20 @@ void _CC_Safe_Async_Block(id block_nil , dispatch_block_t block);
 
 @end
 
+#pragma mark - Solve Memory LEAK
+/// From GOOGLE
+@interface CCWKScriptMessageDelegate : NSObject < WKScriptMessageHandler >
+
+/*
+    For WK.
+    With These , also need add
+    "[[_webView configuration].userContentController removeScriptMessageHandlerForName:@"..."];"
+    in your Code
+ */
+
+@property (nonatomic , assign) id < WKScriptMessageHandler > delegateScriptMessage ;
++ (instancetype) ccInitWithDelegate : (id < WKScriptMessageHandler >) delegateScriptMessage ;
+
+@end
+
 NS_ASSUME_NONNULL_END
