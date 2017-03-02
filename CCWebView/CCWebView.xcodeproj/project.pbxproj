@@ -7,17 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3775C9351E67AC3C00DEFF56 /* CCBasicViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3775C9331E67AC3C00DEFF56 /* CCBasicViewController.m */; };
+		3775C9361E67AC3C00DEFF56 /* CCBasicViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3775C9341E67AC3C00DEFF56 /* CCBasicViewController.xib */; };
+		3775C9391E67AC5B00DEFF56 /* CCWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3775C9381E67AC5B00DEFF56 /* CCWebViewController.m */; };
 		37B7A81D1E66CCDE00D14BB7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B7A81C1E66CCDE00D14BB7 /* main.m */; };
 		37B7A8281E66CCDE00D14BB7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37B7A8271E66CCDE00D14BB7 /* Assets.xcassets */; };
 		37B7A82B1E66CCDE00D14BB7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 37B7A8291E66CCDE00D14BB7 /* LaunchScreen.storyboard */; };
 		37B7A8351E66CE3D00D14BB7 /* CCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B7A8341E66CE3D00D14BB7 /* CCAppDelegate.m */; };
-		37B7A8391E66CEE900D14BB7 /* CCWKWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B7A8381E66CEE900D14BB7 /* CCWKWebViewController.m */; };
-		37B7A83C1E66CEFB00D14BB7 /* CCUIWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B7A83B1E66CEFB00D14BB7 /* CCUIWebViewController.m */; };
 		37B7A8401E66CF4600D14BB7 /* CCWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B7A83F1E66CF4600D14BB7 /* CCWebView.m */; };
 		37B7A8431E66D57700D14BB7 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37B7A8421E66D57700D14BB7 /* WebKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3775C9321E67AC3C00DEFF56 /* CCBasicViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBasicViewController.h; sourceTree = "<group>"; };
+		3775C9331E67AC3C00DEFF56 /* CCBasicViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBasicViewController.m; sourceTree = "<group>"; };
+		3775C9341E67AC3C00DEFF56 /* CCBasicViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCBasicViewController.xib; sourceTree = "<group>"; };
+		3775C9371E67AC5B00DEFF56 /* CCWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCWebViewController.h; sourceTree = "<group>"; };
+		3775C9381E67AC5B00DEFF56 /* CCWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCWebViewController.m; sourceTree = "<group>"; };
 		37B7A8181E66CCDE00D14BB7 /* CCWebView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CCWebView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37B7A81C1E66CCDE00D14BB7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		37B7A8271E66CCDE00D14BB7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -25,10 +31,6 @@
 		37B7A82C1E66CCDE00D14BB7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		37B7A8331E66CE3D00D14BB7 /* CCAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAppDelegate.h; sourceTree = "<group>"; };
 		37B7A8341E66CE3D00D14BB7 /* CCAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCAppDelegate.m; sourceTree = "<group>"; };
-		37B7A8371E66CEE900D14BB7 /* CCWKWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCWKWebViewController.h; sourceTree = "<group>"; };
-		37B7A8381E66CEE900D14BB7 /* CCWKWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCWKWebViewController.m; sourceTree = "<group>"; };
-		37B7A83A1E66CEFB00D14BB7 /* CCUIWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUIWebViewController.h; sourceTree = "<group>"; };
-		37B7A83B1E66CEFB00D14BB7 /* CCUIWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUIWebViewController.m; sourceTree = "<group>"; };
 		37B7A83E1E66CF4600D14BB7 /* CCWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCWebView.h; sourceTree = "<group>"; };
 		37B7A83F1E66CF4600D14BB7 /* CCWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCWebView.m; sourceTree = "<group>"; };
 		37B7A8421E66D57700D14BB7 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -97,10 +99,11 @@
 		37B7A8361E66CEC400D14BB7 /* Controllers+Views */ = {
 			isa = PBXGroup;
 			children = (
-				37B7A8371E66CEE900D14BB7 /* CCWKWebViewController.h */,
-				37B7A8381E66CEE900D14BB7 /* CCWKWebViewController.m */,
-				37B7A83A1E66CEFB00D14BB7 /* CCUIWebViewController.h */,
-				37B7A83B1E66CEFB00D14BB7 /* CCUIWebViewController.m */,
+				3775C9321E67AC3C00DEFF56 /* CCBasicViewController.h */,
+				3775C9331E67AC3C00DEFF56 /* CCBasicViewController.m */,
+				3775C9341E67AC3C00DEFF56 /* CCBasicViewController.xib */,
+				3775C9371E67AC5B00DEFF56 /* CCWebViewController.h */,
+				3775C9381E67AC5B00DEFF56 /* CCWebViewController.m */,
 			);
 			path = "Controllers+Views";
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				37B7A82B1E66CCDE00D14BB7 /* LaunchScreen.storyboard in Resources */,
+				3775C9361E67AC3C00DEFF56 /* CCBasicViewController.xib in Resources */,
 				37B7A8281E66CCDE00D14BB7 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,11 +198,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3775C9391E67AC5B00DEFF56 /* CCWebViewController.m in Sources */,
 				37B7A8351E66CE3D00D14BB7 /* CCAppDelegate.m in Sources */,
 				37B7A8401E66CF4600D14BB7 /* CCWebView.m in Sources */,
-				37B7A8391E66CEE900D14BB7 /* CCWKWebViewController.m in Sources */,
 				37B7A81D1E66CCDE00D14BB7 /* main.m in Sources */,
-				37B7A83C1E66CEFB00D14BB7 /* CCUIWebViewController.m in Sources */,
+				3775C9351E67AC3C00DEFF56 /* CCBasicViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,6 +353,7 @@
 				37B7A8311E66CCDE00D14BB7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -15,23 +15,18 @@
     #define _CC_AUTO_ 0
 #endif
 
+#ifndef __OPTMIZE__
+    #define CCLog(fmt,...) NSLog((@"\n %s \n %s %d \n" fmt),__FILE__,__func__,__LINE__,##__VA_ARGS__)
+#else
+    #define CCLog(...) /* */
+#endif
+
 #define _CC_DETECT_DEALLOC_ \
     - (void)dealloc { \
         CCLog(@"_CC_%@_DEALLOC_" , NSStringFromClass([self class]));\
     }\
 
 @class CCWebView;
-
-/*
-typedef NS_ENUM(NSInteger , CCWebViewNavigationType) {
-    CCWebViewNavigationTypeLinkClicked = 0 ,
-    CCWebViewNavigationTypeFormSubmitted ,
-    CCWebViewNavigationTypeBackForward ,
-    CCWebViewNavigationTypeReload ,
-    CCWebViewNavigationTypeFormResubmitted ,
-    CCWebViewNavigationTypeOther
-};
- */
 
 typedef NS_ENUM(NSInteger , CCWebViewType) {
     CCWebViewTypeUIWebView = 0 ,

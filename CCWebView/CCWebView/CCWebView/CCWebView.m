@@ -22,9 +22,6 @@
 - (void) ccInitUIWebView ;
 - (void) ccDefaultSettings ;
 
-//- (CCWebViewNavigationType) ccTransferWithType : (UIWebViewNavigationType) type ;
-//- (CCWebViewNavigationType) ccTransferWithWKType : (UIWebViewNavigationType) type ;
-
 - (void) ccDelegate_WebViewDidStartLoading;
 - (void) ccDelegate_WebViewDidFinishLoading;
 - (void) ccDelegate_WebViewDidFailWithError : (NSError *) error ;
@@ -53,14 +50,14 @@
 - (id) ccLoadRequest : (NSURLRequest *) request {
     _requestOrigin = request;
     _requestCurrent = _requestOrigin;
-    if (_isUIWebView) {
+    if (self.isUIWebView) {
         [(UIWebView *)_webViewInUse loadRequest:request];
         return nil;
     } else return [(WKWebView *)_webViewInUse loadRequest:request];
 }
 - (id) ccLoadHTMLString : (NSString *)string
                 baseURL : (nullable NSURL *)baseURL {
-    if (_isUIWebView) {
+    if (self.isUIWebView) {
         [(UIWebView *)_webViewInUse loadHTMLString:string
                                            baseURL:baseURL];
         return nil;
@@ -70,7 +67,7 @@
 
 - (void) ccEvaluateJavaScript : (NSString *) stringJavaScript
           withCompleteHandler : (nullable void (^) (id result , NSError *error) ) handler {
-    if(_isUIWebView) {
+    if(self.isUIWebView) {
         NSString *stringResult = [(UIWebView *)_webViewInUse stringByEvaluatingJavaScriptFromString:stringJavaScript];
         _CC_Safe_Async_Block(handler, ^{
             handler(stringResult , nil);
@@ -79,7 +76,7 @@
                                                completionHandler:handler];
 }
 - (NSString *) ccStringByEvaluatingJavaScriptFromString : (NSString *) stringJS {
-    if (_isUIWebView) return [(UIWebView *)_webViewInUse stringByEvaluatingJavaScriptFromString:stringJS];
+    if (self.isUIWebView) return [(UIWebView *)_webViewInUse stringByEvaluatingJavaScriptFromString:stringJS];
     else {
         __block NSString *stringResult = nil;
         __block BOOL isExecuted = NO;
@@ -100,36 +97,35 @@
 // for wk.
 - (void) ccAddScriptMessageHandler : (id <WKScriptMessageHandler>) messageHandler
                           withName : (NSString *) stringName {
-    if (_isUIWebView) return ;
+    if (self.isUIWebView) return ;
     [[(WKWebView *)_webViewInUse configuration].userContentController addScriptMessageHandler:messageHandler
                                                                                          name:stringName];
 }
 - (void) ccRemoveScirptMessageHandler : (NSString *) stringName {
-    if (_isUIWebView) return ;
+    if (self.isUIWebView) return ;
     [[(WKWebView *)_webViewInUse configuration].userContentController removeScriptMessageHandlerForName:stringName];
-
 }
 
 - (id) ccGoBack {
-    if (_isUIWebView) {
+    if (self.isUIWebView) {
         [(UIWebView *)_webViewInUse goBack];
         return nil;
     } else return [(WKWebView *)_webViewInUse goBack];
 }
 - (id) ccGoForward {
-    if (_isUIWebView) {
+    if (self.isUIWebView) {
         [(UIWebView *)_webViewInUse goForward];
         return nil;
     } else return [(WKWebView *)_webViewInUse goForward];
 }
 - (id) ccReload {
-    if(_isUIWebView) {
+    if(self.isUIWebView) {
         [(UIWebView *)_webViewInUse reload];
         return nil;
     } else return [(WKWebView *)_webViewInUse reload];
 }
 - (id) ccRefreshOrigin {
-    if (_isUIWebView) {
+    if (self.isUIWebView) {
         if(_requestOrigin) {
             [self ccEvaluateJavaScript:[NSString stringWithFormat:@"window.location.replace('%@')",_requestOrigin.URL.absoluteString]
                    withCompleteHandler:nil];
@@ -142,7 +138,7 @@
 }
 
 - (NSInteger) ccHistoryCount {
-    if(_isUIWebView) {
+    if(self.isUIWebView) {
         UIWebView *webView = _webViewInUse;
         NSInteger integerCount = [[webView stringByEvaluatingJavaScriptFromString:@"window.history.length"] integerValue];
         return integerCount ? integerCount : 1 ;
@@ -159,7 +155,7 @@
         if(integerLevel >= integerHistory) {
             integerLevel = integerHistory - 1;
         }
-        if(_isUIWebView) {
+        if(self.isUIWebView) {
             UIWebView *webView = _webViewInUse;
             [webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"window.history.go(-%ld)", (long) integerLevel]];
         } else {
@@ -233,21 +229,6 @@
     [_webViewInUse setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     [self addSubview:_webViewInUse];
 }
-
-/*
-- (CCWebViewNavigationType) ccTransferWithType : (UIWebViewNavigationType) type {
-    switch (type) {
-        case UIWebViewNavigationTypeLinkClicked: return CCWebViewNavigationTypeLinkClicked ;
-        case UIWebViewNavigationTypeFormSubmitted: return CCWebViewNavigationTypeFormSubmitted ;
-        case UIWebViewNavigationTypeBackForward: return CCWebViewNavigationTypeBackForward ;
-        case UIWebViewNavigationTypeReload: return CCWebViewNavigationTypeReload ;
-        case UIWebViewNavigationTypeFormResubmitted: return CCWebViewNavigationTypeFormResubmitted ;
-        case UIWebViewNavigationTypeOther: return CCWebViewNavigationTypeOther ;
-            
-        default: return CCWebViewNavigationTypeOther ;
-    }
-}
- */
 
 #pragma mark - WKNavigationDelegate
 -(void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
@@ -335,7 +316,7 @@
 }
 #pragma mark - Setter
 - (void)setIsScaleToFit:(BOOL)isScaleToFit {
-    if(_isUIWebView) {
+    if(self.isUIWebView) {
         UIWebView *webView = _webViewInUse;
         webView.scalesPageToFit = isScaleToFit;
     } else {
@@ -378,10 +359,10 @@
     return [(id)_webViewInUse scrollView];
 }
 - (NSURLRequest *)requestCurrent {
-    return _isUIWebView ? [(UIWebView *)_webViewInUse request] : _requestCurrent;
+    return self.isUIWebView ? [(UIWebView *)_webViewInUse request] : _requestCurrent;
 }
 - (NSURL *)url {
-    return _isUIWebView ? [(UIWebView *)_webViewInUse request].URL : [(WKWebView *)_webViewInUse URL];
+    return self.isUIWebView ? [(UIWebView *)_webViewInUse request].URL : [(WKWebView *)_webViewInUse URL];
 }
 - (BOOL)isLoading {
     return [_webViewInUse isLoading];
@@ -393,11 +374,11 @@
     return [_webViewInUse canGoForward];
 }
 - (BOOL)isScaleToFit {
-    return _isUIWebView ? [_webViewInUse scalesPageToFit] : _isScaleToFit;
+    return self.isUIWebView ? [_webViewInUse scalesPageToFit] : _isScaleToFit;
 }
 
 - (void)dealloc {
-    if(_isUIWebView) {
+    if(self.isUIWebView) {
         UIWebView *webView = _webViewInUse;
         webView.delegate = nil;
     } else {

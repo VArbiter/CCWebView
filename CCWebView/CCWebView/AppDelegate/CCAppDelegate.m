@@ -7,7 +7,7 @@
 //
 
 #import "CCAppDelegate.h"
-#import "CCWKWebViewController.h"
+#import "CCBasicViewController.h"
 
 @interface CCAppDelegate ()
 
@@ -18,8 +18,8 @@
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     _window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     _window.backgroundColor = [UIColor whiteColor];
-    [_window makeKeyWindow];
-    _window.rootViewController = [[CCWKWebViewController alloc] init];
+    [_window makeKeyAndVisible];
+    _window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[CCBasicViewController alloc] initWithNibName:NSStringFromClass([CCBasicViewController class]) bundle:[NSBundle mainBundle]]];
     return YES;
 }
 
